@@ -27,10 +27,11 @@ jobs:
 
       - name: ZAP Baseline Scan
         run: |
-          docker run --network host -t owasp/zap2docker-stable zap-baseline.py \
-            -t http://localhost:5000 \
+          docker run --network host -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+            -t http://localhost:5001 \
             -r zap-report.html \
             -x zap-report.xml
+
 
       - name: Upload ZAP report
         uses: actions/upload-artifact@v4
