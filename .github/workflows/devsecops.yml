@@ -33,6 +33,7 @@ jobs:
             -t http://localhost:5001 \
             -r zap-report.html \
             -x zap-report.xml
+            -I
 
 
 
