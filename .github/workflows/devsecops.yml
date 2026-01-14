@@ -1,0 +1,35 @@
+name: DevSecOps Pipeline
+
+on:
+  push:
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t devsecops-app .
+
+      - name: Trivy container scan
+        run: |
+          docker run --rm aquasec/trivy:latest image --severity HIGH,CRITICAL --exit-code 1 devsecops-app
+
+      - name: Run app container
+        run: docker run -d -p 5001:5000 --name app devsecops-app
+
+      - name: ZAP Baseline Scan
+        run: |
+          docker run --network host -t owasp/zap2docker-stable zap-baseline.py \
+            -t http://localhost:5001 \
+            -r zap-report.html \
+            -x zap-report.xml
+
+      - name: Upload ZAP report
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-report
+          path: zap-report.*
