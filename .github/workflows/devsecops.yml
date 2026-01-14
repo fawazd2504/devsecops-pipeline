@@ -23,19 +23,32 @@ jobs:
           severity: "HIGH,CRITICAL"
 
       - name: Run app container
-        run: docker run -d -p 5000:5000 --name app devsecops-app:latest
+        run: docker run -d -p 5001:5000 --name app devsecops-app:latest
+
+      - name: Wait for app
+        run: |
+          for i in {1..30}; do
+            if curl -sSf http://localhost:5001/ >/dev/null; then
+              echo "App is up!"
+              exit 0
+            fi
+            echo "Waiting for app..."
+            sleep 2
+          done
+          echo "App never became ready"
+          docker logs app || true
+          exit 1
 
       - name: ZAP Baseline Scan
         run: |
           docker run --rm --network host \
+            --user root \
             -v ${{ github.workspace }}:/zap/wrk:rw \
             ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
             -t http://localhost:5001 \
             -r zap-report.html \
-            -x zap-report.xml
+            -x zap-report.xml \
             -I
-
-
 
       - name: Upload ZAP report
         uses: actions/upload-artifact@v4
