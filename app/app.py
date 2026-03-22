@@ -5,7 +5,7 @@ import json
 
 app = Flask(__name__)
 
-SPLUNK_URL = "http://localhost:8088/services/collector/event"
+SPLUNK_URL = "http://127.0.0.1:8088/services/collector/event"
 SPLUNK_TOKEN = "5024ea9b-b272-46d0-ae79-893b3bd0fa61"
 HEADERS = {"Authorization": f"Splunk {SPLUNK_TOKEN}"}
 
