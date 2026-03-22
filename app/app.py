@@ -21,8 +21,8 @@ def send_to_splunk(message, severity="INFO"):
     }
     try:
         requests.post(SPLUNK_URL, headers=HEADERS, data=json.dumps(payload), timeout=2)
-    except:
-        pass
+    except Exception as e:
+        print(f"[SPLUNK ERROR] {e}")
 
 @app.route("/")
 def home():
