@@ -2,10 +2,12 @@ from flask import Flask, request
 import os
 import requests
 import json
+import urllib3
+urllib3.disable_warnings()
 
 app = Flask(__name__)
 
-SPLUNK_URL = "http://127.0.0.1:8088/services/collector/event"
+SPLUNK_URL = "https://127.0.0.1:8088/services/collector/event"
 SPLUNK_TOKEN = "5024ea9b-b272-46d0-ae79-893b3bd0fa61"
 HEADERS = {"Authorization": f"Splunk {SPLUNK_TOKEN}"}
 
@@ -20,7 +22,7 @@ def send_to_splunk(message, severity="INFO"):
         "sourcetype": "flask_app_logs"
     }
     try:
-        requests.post(SPLUNK_URL, headers=HEADERS, data=json.dumps(payload), timeout=2)
+        requests.post(SPLUNK_URL, headers=HEADERS, data=json.dumps(payload), timeout=2, verify=False)
     except Exception as e:
         print(f"[SPLUNK ERROR] {e}")
 
